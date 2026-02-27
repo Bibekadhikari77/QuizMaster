@@ -302,3 +302,4 @@ For issues or questions:
 - Design inspired by modern educational platforms
 - Built with Django and OpenAI
 - Icons: Unicode emoji characters
+# Quiz-generator
