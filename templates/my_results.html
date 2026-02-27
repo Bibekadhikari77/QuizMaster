@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Results - QuizMaster{% endblock %}
+
+{% block content %}
+<div class="layout">
+    <aside class="sidebar">
+        <a href="{% url 'dashboard' %}" class="logo" style="text-decoration: none; color: inherit;">
+            <div class="logo-icon">📘</div>
+            <span class="logo-text">QuizMaster</span>
+        </a>
+        <nav class="nav-menu">
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                <span class="nav-icon">✓</span>
+                <span>Available Quizzes</span>
+            </a>
+            <a href="{% url 'my_results' %}" class="nav-item active">
+                <span class="nav-icon">📊</span>
+                <span>My Results</span>
+            </a>
+            <a href="{% url 'leaderboard' %}" class="nav-item">
+                <span class="nav-icon">📈</span>
+                <span>Leaderboard</span>
+            </a>
+            <a href="{% url 'saved_quizzes' %}" class="nav-item">
+                <span class="nav-icon">🔖</span>
+                <span>Saved Quizzes</span>
+            </a>
+             <!-- Quiz Generator Link -->
+            <a href="{% url 'quiz_generator' %}" class="nav-item">
+                <span class="nav-icon">✨</span>
+                <span>Quiz Generator</span>
+            </a>
+            <a href="{% url 'profile' %}" class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span>My Profile</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span>Settings</span>
+            </a>
+            <a href="{% url 'logout' %}" class="nav-item logout">
+                <span class="nav-icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <h2 style="font-size: 1.5rem; font-weight: 700;">My Results</h2>
+            <div class="header-actions">
+                <button class="icon-btn">🔔</button>
+                <div class="user-profile">
+                    {% if user.profile.avatar %}
+                        <img src="{{ user.profile.avatar.url }}" alt="Profile" class="user-avatar user-avatar-img">
+                    {% else %}
+                        <div class="user-avatar">{{ user.first_name.0|default:"U" }}</div>
+                    {% endif %}
+                    <div class="user-info">
+                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                        <div class="user-level">{{ user.profile.professional_level }}</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="categories-section">
+            <div class="review-list">
+                {% for attempt in attempts %}
+                <div class="review-item">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <div>
+                            <h3 class="item-question">{{ attempt.quiz.title }}</h3>
+                            <p style="color: var(--gray-600); margin-top: 0.5rem;">
+                                {{ attempt.quiz.category.name }} • {{ attempt.completed_at|date:"M d, Y" }}
+                            </p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color);">
+                                {{ attempt.percentage_score }}%
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--gray-600);">
+                                {{ attempt.score }}/{{ attempt.total_questions }} correct
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="{% url 'quiz_results' attempt.id %}" class="btn-secondary">
+                            View Details
+                        </a>
+                        <a href="{% url 'start_quiz' attempt.quiz.id %}" class="btn-primary">
+                            Retake Quiz
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <p>You haven't completed any quizzes yet.</p>
+                    <a href="{% url 'dashboard' %}" class="btn-primary">
+                        Take Your First Quiz
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+</div>
+{% endblock %}

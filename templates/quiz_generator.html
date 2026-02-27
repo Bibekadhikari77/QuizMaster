@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quiz Generator - QuizMaster{% endblock %}
+
+{% block content %}
+<div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="{% url 'dashboard' %}" class="logo" style="text-decoration: none; color: inherit;">
+            <div class="logo-icon">📘</div>
+            <span class="logo-text">QuizMaster</span>
+        </a>
+
+        <nav class="nav-menu">
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                <span class="nav-icon">✓</span>
+                <span>Available Quizzes</span>
+            </a>
+            <a href="{% url 'my_results' %}" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span>My Results</span>
+            </a>
+            <a href="{% url 'leaderboard' %}" class="nav-item">
+                <span class="nav-icon">📈</span>
+                <span>Leaderboard</span>
+            </a>
+            <a href="{% url 'saved_quizzes' %}" class="nav-item">
+                <span class="nav-icon">🔖</span>
+                <span>Saved Quizzes</span>
+            </a>
+            <a href="{% url 'quiz_generator' %}" class="nav-item active">
+                <span class="nav-icon">✨</span>
+                <span>Quiz Generator</span>
+            </a>
+             <a href="{% url 'profile' %}" class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span>My Profile</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span>Settings</span>
+            </a>
+            <a href="{% url 'logout' %}" class="nav-item logout">
+                <span class="nav-icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search for quizzes..." disabled>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn">🔔</button>
+                <div class="user-profile">
+                    {% if user.profile.avatar %}
+                        <img src="{{ user.profile.avatar.url }}" alt="Profile" class="user-avatar user-avatar-img">
+                    {% else %}
+                        <div class="user-avatar">{{ user.first_name.0|default:"U" }}</div>
+                    {% endif %}
+                    <div class="user-info">
+                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                        <div class="user-level">{{ user.profile.professional_level }}</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Quiz Generator Content -->
+        <div class="generator-page-content">
+            <div class="generator-header">
+                <div class="header-icon">✨</div>
+                <div class="header-text">
+                    <h1>AI Quiz Generator</h1>
+                </div>
+            </div>
+
+            <div class="generator-card">
+                <form id="quizGeneratorForm" class="generator-main-form">
+                    <h2 class="form-title">Create Your Quiz</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group-large">
+                            <label for="quizTopic">
+                                <span class="label-icon">📚</span>
+                                Quiz Topic
+                            </label>
+                            <input type="text" id="quizTopic" name="topic" 
+                                   placeholder="Enter any topic" 
+                                   required>
+                            <span class="help-text">Enter any topic you want to learn or test yourself on</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group-half">
+                            <label for="quizLevel">
+                                <span class="label-icon">📊</span>
+                                Difficulty Level
+                            </label>
+                            <select id="quizLevel" name="level" required>
+                                <option value="">Select Level</option>
+                                <option value="beginner">🌱 Beginner - Basic concepts</option>
+                                <option value="intermediate">📚 Intermediate - Moderate difficulty</option>
+                                <option value="advanced">🚀 Advanced - Expert level</option>
+                                <option value="expert">👑 Expert - Professional mastery</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group-half">
+                            <label for="numQuestions">
+                                <span class="label-icon">🔢</span>
+                                Number of Questions
+                            </label>
+                            <input type="number" id="numQuestions" name="num_questions" 
+                                   min="1" value="" 
+                                   placeholder="Enter any number" 
+                                   required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-generate-large" id="generateBtn">
+                        <span class="btn-icon">🤖</span>
+                        <span class="btn-text">Generate Quiz with AI</span>
+                    </button>
+
+                    <div id="generatorStatus" class="generator-status-large"></div>
+                </form>
+
+                <div class="recent-quizzes">
+                    <h3>💡 Popular Topics</h3>
+                    <div class="topic-chips">
+                        <button class="topic-chip" onclick="fillTopic('Python Programming')">Python Programming</button>
+                        <button class="topic-chip" onclick="fillTopic('JavaScript ES6')">JavaScript ES6</button>
+                        <button class="topic-chip" onclick="fillTopic('Machine Learning')">Machine Learning</button>
+                        <button class="topic-chip" onclick="fillTopic('World History')">World History</button>
+                        <button class="topic-chip" onclick="fillTopic('Physics')">Physics</button>
+                        <button class="topic-chip" onclick="fillTopic('Biology')">Biology</button>
+                        <button class="topic-chip" onclick="fillTopic('Mathematics')">Mathematics</button>
+                        <button class="topic-chip" onclick="fillTopic('Data Structures')">Data Structures</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+// Fill topic from chip
+function fillTopic(topic) {
+    document.getElementById('quizTopic').value = topic;
+    document.getElementById('quizTopic').focus();
+}
+
+// Quiz Generator Form Handler
+document.getElementById('quizGeneratorForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const topic = document.getElementById('quizTopic').value;
+    const level = document.getElementById('quizLevel').value;
+    const numQuestions = document.getElementById('numQuestions').value;
+    const generateBtn = document.getElementById('generateBtn');
+    const statusDiv = document.getElementById('generatorStatus');
+    const btnText = generateBtn.querySelector('.btn-text');
+    const originalText = btnText.textContent;
+    
+    // Show loading state
+    btnText.textContent = 'Generating Quiz...';
+    generateBtn.disabled = true;
+    generateBtn.classList.add('loading');
+    statusDiv.innerHTML = '<div class="status-loading"><div class="spinner"></div> AI is creating your quiz...</div>';
+    
+    // Make AJAX request to generate custom quiz
+    fetch(`/generate-custom-quiz/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({
+            topic: topic,
+            level: level,
+            num_questions: parseInt(numQuestions)
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.quiz_id) {
+            statusDiv.innerHTML = '<div class="status-success">✅ Quiz created successfully! Redirecting...</div>';
+            setTimeout(() => {
+                window.location.href = `/quiz/${data.quiz_id}/start/`;
+            }, 1000);
+        } else {
+            statusDiv.innerHTML = `<div class="status-error">❌ ${data.error || 'Failed to generate quiz. Please try again.'}</div>`;
+            btnText.textContent = originalText;
+            generateBtn.disabled = false;
+            generateBtn.classList.remove('loading');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        statusDiv.innerHTML = '<div class="status-error">❌ An error occurred. Please try again.</div>';
+        btnText.textContent = originalText;
+        generateBtn.disabled = false;
+        generateBtn.classList.remove('loading');
+    });
+});
+
+// Helper function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

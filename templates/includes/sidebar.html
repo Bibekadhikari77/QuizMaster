@@ -1,0 +1,41 @@
+<!-- Reusable Sidebar Component -->
+<aside class="sidebar">
+    <a href="{% url 'dashboard' %}" class="logo" style="text-decoration: none; color: inherit;">
+        <div class="logo-icon">📘</div>
+        <span class="logo-text">QuizMaster</span>
+    </a>
+
+    <nav class="nav-menu">
+        <a href="{% url 'dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <span class="nav-icon">✓</span>
+            <span>Available Quizzes</span>
+        </a>
+        <a href="{% url 'my_results' %}" class="nav-item {% if request.resolver_match.url_name == 'my_results' %}active{% endif %}">
+            <span class="nav-icon">📊</span>
+            <span>My Results</span>
+        </a>
+        <a href="{% url 'leaderboard' %}" class="nav-item {% if request.resolver_match.url_name == 'leaderboard' %}active{% endif %}">
+            <span class="nav-icon">📈</span>
+            <span>Leaderboard</span>
+        </a>
+        <a href="{% url 'saved_quizzes' %}" class="nav-item {% if request.resolver_match.url_name == 'saved_quizzes' %}active{% endif %}">
+            <span class="nav-icon">🔖</span>
+            <span>Saved Quizzes</span>
+        </a>
+        <a href="{% url 'quiz_generator' %}" class="nav-item {% if request.resolver_match.url_name == 'quiz_generator' %}active{% endif %}">
+            <span class="nav-icon">✨</span>
+            <span>Quiz Generator</span>
+        </a>
+        <a href="{% url 'profile' %}" class="nav-item {% if request.resolver_match.url_name == 'profile' or request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">
+            <span class="nav-icon">👤</span>
+            <span>My Profile</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <a href="{% url 'logout' %}" class="nav-item logout">
+            <span class="nav-icon">🚪</span>
+            <span>Logout</span>
+        </a>
+    </div>
+</aside>

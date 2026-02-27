@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Leaderboard - QuizMaster{% endblock %}
+
+{% block content %}
+<div class="layout">
+    <aside class="sidebar">
+        <a href="{% url 'dashboard' %}" class="logo" style="text-decoration: none; color: inherit;">
+            <div class="logo-icon">📘</div>
+            <span class="logo-text">QuizMaster</span>
+        </a>
+        <nav class="nav-menu">
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                <span class="nav-icon">✓</span>
+                <span>Available Quizzes</span>
+            </a>
+            <a href="{% url 'my_results' %}" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span>My Results</span>
+            </a>
+            <a href="{% url 'leaderboard' %}" class="nav-item active">
+                <span class="nav-icon">📈</span>
+                <span>Leaderboard</span>
+            </a>
+            <a href="{% url 'saved_quizzes' %}" class="nav-item">
+                <span class="nav-icon">🔖</span>
+                <span>Saved Quizzes</span>
+            </a>
+             <!-- Quiz Generator Link -->
+            <a href="{% url 'quiz_generator' %}" class="nav-item">
+                <span class="nav-icon">✨</span>
+                <span>Quiz Generator</span>
+            </a>
+            <a href="{% url 'profile' %}" class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span>My Profile</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span>Settings</span>
+            </a>
+            <a href="{% url 'logout' %}" class="nav-item logout">
+                <span class="nav-icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search leaderboard...">
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn">🔔</button>
+                <div class="user-profile">
+                    {% if user.profile.avatar %}
+                        <img src="{{ user.profile.avatar.url }}" alt="Profile" class="user-avatar user-avatar-img">
+                    {% else %}
+                        <div class="user-avatar">{{ user.first_name.0|default:"U" }}</div>
+                    {% endif %}
+                    <div class="user-info">
+                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                        <div class="user-level">{{ user.profile.professional_level }}</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="welcome-section">
+            <h1 class="welcome-title">🏆 Global Leaderboard</h1>
+            <p class="welcome-subtitle">Top performers across all quizzes</p>
+        </section>
+
+        <section class="categories-section">
+            <div style="background: white; border-radius: 12px; overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead style="background: var(--gray-100);">
+                        <tr>
+                            <th style="padding: 1rem; text-align: left;">Rank</th>
+                            <th style="padding: 1rem; text-align: left;">User</th>
+                            <th style="padding: 1rem; text-align: center;">Quizzes</th>
+                            <th style="padding: 1rem; text-align: center;">Avg Score</th>
+                            <th style="padding: 1rem; text-align: right;">Total Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for profile in top_users %}
+                        <tr class="leaderboard-row {% if profile.user == user %}current-user{% endif %}">
+                            <td style="padding: 1rem; font-weight: 700;">
+                                {% if forloop.counter <= 3 %}
+                                    <span style="font-size: 1.5rem;">
+                                        {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% else %}🥉{% endif %}
+                                    </span>
+                                {% else %}
+                                    #{{ forloop.counter }}
+                                {% endif %}
+                            </td>
+                            <td style="padding: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="user-avatar">{{ profile.user.first_name.0|default:"U" }}</div>
+                                    <div>
+                                        <div style="font-weight: 600;">
+                                            {{ profile.user.first_name|default:profile.user.username }}
+                                            {% if profile.user == user %}<span style="color: var(--primary-color);">(You)</span>{% endif %}
+                                        </div>
+                                        <div style="font-size: 0.85rem; color: var(--gray-600);">
+                                            {{ profile.professional_level }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: 1rem; text-align: center;">{{ profile.quizzes_completed }}</td>
+                            <td style="padding: 1rem; text-align: center;">{{ profile.average_score }}%</td>
+                            <td style="padding: 1rem; text-align: right; font-weight: 700; color: var(--primary-color);">
+                                {{ profile.total_score }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+{% endblock %}

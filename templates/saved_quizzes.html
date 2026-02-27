@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Saved Quizzes - QuizMaster{% endblock %}
+
+{% block content %}
+<div class="layout">
+    <aside class="sidebar">
+        <a href="{% url 'dashboard' %}" class="logo" style="text-decoration: none; color: inherit;">
+            <div class="logo-icon">📘</div>
+            <span class="logo-text">QuizMaster</span>
+        </a>
+        <nav class="nav-menu">
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                <span class="nav-icon">✓</span>
+                <span>Available Quizzes</span>
+            </a>
+            <a href="{% url 'my_results' %}" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span>My Results</span>
+            </a>
+            <a href="{% url 'leaderboard' %}" class="nav-item">
+                <span class="nav-icon">📈</span>
+                <span>Leaderboard</span>
+            </a>
+            <a href="{% url 'saved_quizzes' %}" class="nav-item active">
+                <span class="nav-icon">🔖</span>
+                <span>Saved Quizzes</span>
+            </a>
+             <!-- Quiz Generator Link -->
+            <a href="{% url 'quiz_generator' %}" class="nav-item">
+                <span class="nav-icon">✨</span>
+                <span>Quiz Generator</span>
+            </a>
+            <a href="{% url 'profile' %}" class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span>My Profile</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span>Settings</span>
+            </a>
+            <a href="{% url 'logout' %}" class="nav-item logout">
+                <span class="nav-icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search saved quizzes...">
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn">🔔</button>
+                <div class="user-profile">
+                    {% if user.profile.avatar %}
+                        <img src="{{ user.profile.avatar.url }}" alt="Profile" class="user-avatar user-avatar-img">
+                    {% else %}
+                        <div class="user-avatar">{{ user.first_name.0|default:"U" }}</div>
+                    {% endif %}
+                    <div class="user-info">
+                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                        <div class="user-level">{{ user.profile.professional_level }}</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="welcome-section">
+            <h1 class="welcome-title">🔖 Saved Quizzes</h1>
+            <p class="welcome-subtitle">Your bookmarked quizzes for later</p>
+        </section>
+
+        <section class="categories-section">
+            <div class="categories-grid">
+                {% for saved in saved_quizzes %}
+                <div class="category-card">
+                    <div class="category-content" style="padding: 2rem;">
+                        <h3 class="category-title">{{ saved.quiz.title }}</h3>
+                        <p class="category-description">{{ saved.quiz.description }}</p>
+                        <div class="category-footer">
+                            <span class="question-count">{{ saved.quiz.question_count }} Questions</span>
+                            <a href="{% url 'start_quiz' saved.quiz.id %}" class="btn-primary">
+                                Start Quiz
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <p>You haven't saved any quizzes yet.</p>
+                    <a href="{% url 'dashboard' %}" class="btn-primary">
+                        Browse Quizzes
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+</div>
+{% endblock %}

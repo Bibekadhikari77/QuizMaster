@@ -1,0 +1,666 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - QuizMaster{% endblock %}
+
+{% block content %}
+<div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="{% url 'dashboard' %}" class="logo" style="text-decoration: none; color: inherit;">
+            <div class="logo-icon">📘</div>
+            <span class="logo-text">QuizMaster</span>
+        </a>
+
+        <nav class="nav-menu">
+            <a href="{% url 'dashboard' %}" class="nav-item">
+                <span class="nav-icon">✓</span>
+                <span>Available Quizzes</span>
+            </a>
+            <a href="{% url 'my_results' %}" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span>My Results</span>
+            </a>
+            <a href="{% url 'leaderboard' %}" class="nav-item">
+                <span class="nav-icon">📈</span>
+                <span>Leaderboard</span>
+            </a>
+            <a href="{% url 'saved_quizzes' %}" class="nav-item">
+                <span class="nav-icon">🔖</span>
+                <span>Saved Quizzes</span>
+            </a>
+            <a href="{% url 'quiz_generator' %}" class="nav-item">
+                <span class="nav-icon">✨</span>
+                <span>Quiz Generator</span>
+            </a>
+            <a href="{% url 'profile' %}" class="nav-item active">
+                <span class="nav-icon">👤</span>
+                <span>My Profile</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span>Settings</span>
+            </a>
+            <a href="{% url 'logout' %}" class="nav-item logout">
+                <span class="nav-icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search for quizzes...">
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn">🔔</button>
+                <div class="user-profile">
+                    {% if profile.avatar %}
+                        <img src="{{ profile.avatar.url }}" alt="Profile" class="user-avatar user-avatar-img">
+                    {% else %}
+                        <div class="user-avatar">{{ user.first_name.0|default:"U" }}</div>
+                    {% endif %}
+                    <div class="user-info">
+                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                        <div class="user-level">{{ profile.professional_level }}</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Profile Section -->
+        <section class="welcome-section">
+            <h1 class="welcome-title">My Profile 👤</h1>
+            <p class="welcome-subtitle">View and manage your profile information</p>
+        </section>
+
+        <!-- Profile Header with Image -->
+        <div class="profile-header-card">
+            <div class="profile-avatar-section">
+                {% if profile.avatar %}
+                    <img src="{{ profile.avatar.url }}" alt="Profile Picture" class="profile-avatar-large">
+                {% else %}
+                    <div class="profile-avatar-large profile-avatar-placeholder">
+                        <span class="avatar-initial">{{ user.first_name.0|default:user.username.0|upper }}</span>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="profile-header-info">
+                <h2 class="profile-name">
+                    {% if user.first_name %}
+                        {{ user.first_name }} {{ user.last_name|default:"" }}
+                    {% else %}
+                        {{ user.username }}
+                    {% endif %}
+                </h2>
+                <p class="profile-username">@{{ user.username }}</p>
+                <div class="profile-badges">
+                    <span class="badge badge-level">{{ profile.professional_level }}</span>
+                    <span class="badge badge-rank">🏆 Rank #{{ profile.global_rank|default:"N/A" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Information Cards -->
+        <div class="profile-container">
+            <!-- Personal Information Card -->
+            <div class="profile-card">
+                <div class="card-header">
+                    <h2 class="card-title">Personal Information</h2>
+                    <a href="{% url 'edit_profile' %}" class="btn-edit">✏️ Edit</a>
+                </div>
+                <div class="profile-info">
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span class="info-icon">👤</span>
+                            <span>Full Name</span>
+                        </div>
+                        <div class="info-value">
+                            {% if user.first_name %}
+                                {{ user.first_name }} {{ user.last_name|default:"" }}
+                            {% else %}
+                                {{ user.username }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span class="info-icon">✉️</span>
+                            <span>Email</span>
+                        </div>
+                        <div class="info-value">{{ user.email|default:"Not provided" }}</div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span class="info-icon">📱</span>
+                            <span>Mobile Number</span>
+                        </div>
+                        <div class="info-value">{{ profile.mobile_number|default:"Not provided" }}</div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span class="info-icon">📍</span>
+                            <span>Address</span>
+                        </div>
+                        <div class="info-value">{{ profile.address|default:"Not provided" }}</div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span class="info-icon">🎯</span>
+                            <span>Professional Level</span>
+                        </div>
+                        <div class="info-value">{{ profile.professional_level }}</div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span class="info-icon">🏆</span>
+                            <span>Global Rank</span>
+                        </div>
+                        <div class="info-value">#{{ profile.global_rank|default:"N/A" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Card -->
+            <div class="profile-card">
+                <div class="card-header">
+                    <h2 class="card-title">Statistics</h2>
+                </div>
+                <div class="stats-grid-profile">
+                    <div class="stat-item">
+                        <div class="stat-icon-circle">✅</div>
+                        <div class="stat-details">
+                            <div class="stat-label-sm">Total Attempts</div>
+                            <div class="stat-value-lg">{{ total_attempts }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon-circle">📊</div>
+                        <div class="stat-details">
+                            <div class="stat-label-sm">Average Score</div>
+                            <div class="stat-value-lg">{{ average_score }}%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon-circle">⭐</div>
+                        <div class="stat-details">
+                            <div class="stat-label-sm">Best Score</div>
+                            <div class="stat-value-lg">{{ best_score }}%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon-circle">🎯</div>
+                        <div class="stat-details">
+                            <div class="stat-label-sm">Total Points</div>
+                            <div class="stat-value-lg">{{ total_score }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Quiz Results -->
+        <div class="results-section">
+            <div class="section-header">
+                <h2 class="section-title">Recent Quiz Results</h2>
+                <a href="{% url 'my_results' %}" class="view-all-link">View All →</a>
+            </div>
+
+            {% if recent_attempts %}
+                <div class="results-grid">
+                    {% for attempt in recent_attempts %}
+                    <div class="result-card">
+                        <div class="result-header">
+                            <div class="result-quiz-info">
+                                <h3 class="result-quiz-title">{{ attempt.quiz.title }}</h3>
+                                <p class="result-category">{{ attempt.quiz.category.name }}</p>
+                            </div>
+                            <div class="result-score-badge {% if attempt.percentage_score >= 80 %}success{% elif attempt.percentage_score >= 60 %}warning{% else %}danger{% endif %}">
+                                {{ attempt.percentage_score }}%
+                            </div>
+                        </div>
+                        
+                        <div class="result-stats">
+                            <div class="result-stat">
+                                <span class="result-stat-label">Score</span>
+                                <span class="result-stat-value">{{ attempt.score }}/{{ attempt.total_questions }}</span>
+                            </div>
+                            <div class="result-stat">
+                                <span class="result-stat-label">Time</span>
+                                <span class="result-stat-value">{{ attempt.time_taken_seconds|floatformat:0 }}s</span>
+                            </div>
+                            <div class="result-stat">
+                                <span class="result-stat-label">Date</span>
+                                <span class="result-stat-value">{{ attempt.completed_at|date:"M d, Y" }}</span>
+                            </div>
+                        </div>
+                        
+                        <a href="{% url 'quiz_results' attempt.id %}" class="view-details-btn">View Details</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📝</div>
+                    <h3 class="empty-title">No Quiz Results Yet</h3>
+                    <p class="empty-text">Start taking quizzes to see your results here</p>
+                    <a href="{% url 'dashboard' %}" class="btn-primary">Browse Quizzes</a>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<style>
+.profile-header-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.profile-avatar-section {
+    flex-shrink: 0;
+}
+
+.profile-avatar-large {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    object-fit: cover;
+}
+
+.profile-avatar-placeholder {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-initial {
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+}
+
+.profile-header-info {
+    flex: 1;
+    color: white;
+}
+
+.profile-name {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: white;
+}
+
+.profile-username {
+    font-size: 16px;
+    margin: 0 0 12px 0;
+    opacity: 0.9;
+}
+
+.profile-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.badge-level {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
+.badge-rank {
+    background: rgba(255, 215, 0, 0.9);
+    color: #1f2937;
+}
+
+.profile-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.profile-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.btn-edit {
+    background: #f3f4f6;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #4f46e5;
+    font-weight: 500;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-edit:hover {
+    background: #e5e7eb;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.info-icon {
+    font-size: 18px;
+}
+
+.info-value {
+    color: #1f2937;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.stats-grid-profile {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 12px;
+}
+
+.stat-icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.stat-details {
+    flex: 1;
+}
+
+.stat-label-sm {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.stat-value-lg {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.results-section {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.view-all-link {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.view-all-link:hover {
+    text-decoration: underline;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.result-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+    background: #fafafa;
+    transition: all 0.2s;
+}
+
+.result-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.result-quiz-info {
+    flex: 1;
+}
+
+.result-quiz-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 4px 0;
+}
+
+.result-category {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.result-score-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.result-score-badge.success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.result-score-badge.warning {
+    background: #fed7aa;
+    color: #92400e;
+}
+
+.result-score-badge.danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.result-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.result-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.result-stat-label {
+    font-size: 11px;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+
+.result-stat-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.view-details-btn {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    background: #4f46e5;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.view-details-btn:hover {
+    background: #4338ca;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 48px 24px;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.empty-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 8px 0;
+}
+
+.empty-text {
+    color: #6b7280;
+    margin: 0 0 24px 0;
+}
+
+.btn-primary {
+    display: inline-block;
+    background: #4f46e5;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background: #4338ca;
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid-profile {
+        grid-template-columns: 1fr;
+    }
+    
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

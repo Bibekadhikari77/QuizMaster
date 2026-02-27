@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - QuizMaster{% endblock %}
+
+{% block content %}
+<div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="{% url 'dashboard' %}" class="logo" style="text-decoration: none; color: inherit;">
+            <div class="logo-icon">📘</div>
+            <span class="logo-text">QuizMaster</span>
+        </a>
+
+        <nav class="nav-menu">
+            <a href="{% url 'dashboard' %}" class="nav-item active">
+                <span class="nav-icon">✓</span>
+                <span>Available Quizzes</span>
+            </a>
+            <a href="{% url 'my_results' %}" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span>My Results</span>
+            </a>
+            <a href="{% url 'leaderboard' %}" class="nav-item">
+                <span class="nav-icon">📈</span>
+                <span>Leaderboard</span>
+            </a>
+            <a href="{% url 'saved_quizzes' %}" class="nav-item">
+                <span class="nav-icon">🔖</span>
+                <span>Saved Quizzes</span>
+            </a>
+            
+            <!-- Quiz Generator Link -->
+            <a href="{% url 'quiz_generator' %}" class="nav-item">
+                <span class="nav-icon">✨</span>
+                <span>Quiz Generator</span>
+            </a>
+            <a href="{% url 'profile' %}" class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span>My Profile</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span>Settings</span>
+            </a>
+            <a href="{% url 'logout' %}" class="nav-item logout">
+                <span class="nav-icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search for quizzes..." id="searchInput">
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn">🔔</button>
+                <div class="user-profile">
+                    {% if user.profile.avatar %}
+                        <img src="{{ user.profile.avatar.url }}" alt="Profile" class="user-avatar user-avatar-img">
+                    {% else %}
+                        <div class="user-avatar">{{ user.first_name.0|default:"U" }}</div>
+                    {% endif %}
+                    <div class="user-info">
+                        <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                        <div class="user-level">{{ user.profile.professional_level }}</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+            <h1 class="welcome-title">Welcome back, {{ user.first_name|default:user.username }}! 👋</h1>
+            <p class="welcome-subtitle">Ready to test your knowledge today?</p>
+        </section>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Quizzes Completed</span>
+                    <span class="stat-icon">✅</span>
+                </div>
+                <div class="stat-value">{{ user.profile.quizzes_completed }}</div>
+                <div class="stat-change positive">+2 this week</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Average Score</span>
+                    <span class="stat-icon">📊</span>
+                </div>
+                <div class="stat-value">{{ user.profile.average_score }}%</div>
+                <div class="stat-change">Top 15% of users</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Global Rank</span>
+                    <span class="stat-icon">🏆</span>
+                </div>
+                <div class="stat-value">#{{ user.profile.global_rank|default:"--" }}</div>
+                <div class="stat-tier">Elite Tier</div>
+            </div>
+        </div>
+
+        <!-- Categories Section -->
+        <section class="categories-section">
+            <div class="section-header">
+                <h2>Explore Categories</h2>
+                <a href="#" class="view-all">View All</a>
+            </div>
+
+            <!-- Level Filter Buttons -->
+            <div class="level-filters">
+                <button class="level-filter-btn active" data-level="all" onclick="filterByLevel('all')">
+                    <span class="filter-icon">🎯</span>
+                    All Levels
+                </button>
+                <button class="level-filter-btn" data-level="beginner" onclick="filterByLevel('beginner')">
+                    <span class="filter-icon">🌱</span>
+                    Beginner
+                </button>
+                <button class="level-filter-btn" data-level="intermediate" onclick="filterByLevel('intermediate')">
+                    <span class="filter-icon">📚</span>
+                    Intermediate
+                </button>
+                <button class="level-filter-btn" data-level="advanced" onclick="filterByLevel('advanced')">
+                    <span class="filter-icon">🚀</span>
+                    Advanced
+                </button>
+                <button class="level-filter-btn" data-level="expert" onclick="filterByLevel('expert')">
+                    <span class="filter-icon">👑</span>
+                    Expert
+                </button>
+            </div>
+
+            <div class="categories-grid">
+                {% for category in categories %}
+                <div class="category-card" data-category="{{ category.slug }}" data-level="{{ category.level }}">
+                    <div class="category-image">
+                        {% if category.image %}
+                        <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                        {% else %}
+                        <div class="category-placeholder" data-color="{{ category.color|default:'#4F46E5' }}"></div>
+                        {% endif %}
+                    </div>
+                    <div class="category-content">
+                        <div class="category-header">
+                            <span class="category-tag">{{ category.name|upper }}</span>
+                            <span class="category-duration">
+                                <span class="duration-icon">⏱️</span>
+                                15m
+                            </span>
+                        </div>
+                        <h3 class="category-title">{{ category.name }}</h3>
+                        <div class="category-meta">
+                            <span class="meta-item">
+                                <span class="meta-icon">📚</span>
+                                <span class="meta-text">{{ category.subject }}</span>
+                            </span>
+                            <span class="meta-item level-{{ category.level }}">
+                                <span class="meta-icon">📊</span>
+                                <span class="meta-text">{{ category.get_level_display }}</span>
+                            </span>
+                        </div>
+                        <p class="category-description">{{ category.description }}</p>
+                        <div class="category-footer">
+                            <span class="question-count">{{ category.quizzes.count }} Quizzes</span>
+                            <button class="btn-primary" onclick="generateAndStartQuiz('{{ category.name }}', '{{ category.slug }}')">
+                                Start Quiz
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <p>No categories available yet.</p>
+                    <button class="btn-secondary" onclick="generateAIQuiz()">Generate AI Quiz</button>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+</div>
+{% endblock %}

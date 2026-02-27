@@ -1,0 +1,21 @@
+<!-- Reusable Header Component -->
+<header class="header">
+    <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search..." id="searchInput">
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn">🔔</button>
+        <div class="user-profile">
+            {% if user.profile.avatar %}
+                <img src="{{ user.profile.avatar.url }}" alt="Profile" class="user-avatar user-avatar-img">
+            {% else %}
+                <div class="user-avatar">{{ user.first_name.0|default:"U" }}</div>
+            {% endif %}
+            <div class="user-info">
+                <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                <div class="user-level">{{ user.profile.professional_level }}</div>
+            </div>
+        </div>
+    </div>
+</header>

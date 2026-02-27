@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quiz Results - QuizMaster{% endblock %}
+
+{% block content %}
+<div class="results-container">
+    <!-- Header -->
+    <header class="results-header">
+        <a href="{% url 'dashboard' %}" class="header-left" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
+            <span class="brand-icon">📊</span>
+            <span class="brand-text">QuizMaster</span>
+        </a>
+        <div class="search-bar" style="flex: 1; max-width: 500px; margin: 0 2rem;">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search..." style="width: 100%;">
+        </div>
+        <div class="header-right">
+            <button class="icon-btn">🔔</button>
+            <div class="user-profile">
+                {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="Profile" class="user-avatar user-avatar-img">
+                {% else %}
+                    <div class="user-avatar">{{ user.first_name.0|default:"U" }}</div>
+                {% endif %}
+                <div class="user-info">
+                    <div class="user-name">{{ user.first_name|default:user.username }}</div>
+                    <div class="user-level">{{ user.profile.professional_level|default:"Student" }}</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Results Content -->
+    <div class="results-content">
+        <!-- Success Badge -->
+        <div class="success-badge">
+            <span class="badge-icon">✓</span>
+            <span class="badge-text">ASSESSMENT COMPLETE</span>
+        </div>
+
+        <h1 class="results-title">Quiz Results</h1>
+        <p class="results-subtitle">
+            Excellent work! You passed the {{ attempt.quiz.title }} quiz.
+        </p>
+
+        <!-- Action Buttons -->
+        <div class="results-actions">
+            <button class="btn-secondary" onclick="window.print()">
+                📄 Certificate
+            </button>
+            <button class="btn-primary" onclick="shareResults()">
+                📤 Share Result
+            </button>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="results-stats-grid">
+            <div class="stat-box main-score">
+                <div class="score-circle">
+                    <svg class="progress-ring" width="120" height="120">
+                        <circle class="progress-ring-bg" cx="60" cy="60" r="50"></circle>
+                        <circle class="progress-ring-progress" cx="60" cy="60" r="50" 
+                                data-offset="{{ progress_offset }}"></circle>
+                    </svg>
+                    <div class="score-text">
+                        <div class="score-value">{{ attempt.score }}/{{ attempt.total_questions }}</div>
+                        <div class="score-label">{{ attempt.percentage_score }}% SCORE</div>
+                    </div>
+                </div>
+                <p class="score-subtitle">Passing Score: 70%</p>
+            </div>
+
+            <div class="stat-box correct-box">
+                <div class="stat-icon correct">✓</div>
+                <div class="stat-details">
+                    <div class="stat-label">Correct</div>
+                    <div class="stat-number">{{ attempt.score }}</div>
+                    <div class="stat-sublabel">QUESTIONS</div>
+                </div>
+            </div>
+
+            <div class="stat-box wrong-box">
+                <div class="stat-icon wrong">✗</div>
+                <div class="stat-details">
+                    <div class="stat-label">Wrong</div>
+                    <div class="stat-number">{{ wrong_answers }}</div>
+                    <div class="stat-sublabel">QUESTIONS</div>
+                </div>
+            </div>
+
+            <div class="stat-box time-box">
+                <div class="stat-icon time">⏱️</div>
+                <div class="stat-details">
+                    <div class="stat-label">Time Taken</div>
+                    <div class="stat-number">{{ time_taken }}</div>
+                    <div class="stat-sublabel">MM:SS</div>
+                </div>
+            </div>
+
+            <div class="stat-box efficiency-box">
+                <div class="stat-icon efficiency">📈</div>
+                <div class="stat-details">
+                    <div class="stat-label">Efficiency</div>
+                    <div class="stat-number">{{ attempt.efficiency }}%</div>
+                    <div class="stat-sublabel">PERFORMANCE</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Review -->
+        <section class="question-review">
+            <div class="review-header">
+                <h2>Question Review</h2>
+                <div class="review-filters">
+                    <button class="filter-btn active" onclick="filterQuestions(event, 'all')">All</button>
+                    <button class="filter-btn correct" onclick="filterQuestions(event, 'correct')">Correct</button>
+                    <button class="filter-btn incorrect" onclick="filterQuestions(event, 'incorrect')">Incorrect</button>
+                </div>
+            </div>
+
+            <div class="review-list">
+                {% for response in responses %}
+                <div class="review-item {% if response.is_correct %}correct-item{% else %}incorrect-item{% endif %}" 
+                     data-status="{% if response.is_correct %}correct{% else %}incorrect{% endif %}">
+                    <div class="review-item-header">
+                        <div class="item-status">
+                            {% if response.is_correct %}
+                            <span class="status-icon correct">✓</span>
+                            {% else %}
+                            <span class="status-icon incorrect">✗</span>
+                            {% endif %}
+                        </div>
+                        <h3 class="item-question">{{ forloop.counter }}. {{ response.question.text }}</h3>
+                    </div>
+
+                    <div class="item-answers">
+                        <div class="answer-row {% if not response.is_correct %}your-answer wrong{% endif %}">
+                            <span class="answer-label">YOUR ANSWER</span>
+                            <span class="answer-text">{{ response.selected_answer.text }}</span>
+                        </div>
+                        
+                        {% if not response.is_correct %}
+                        <div class="answer-row correct-answer">
+                            <span class="answer-label">CORRECT ANSWER</span>
+                            <span class="answer-text">
+                                {% for answer in response.question.answers.all %}
+                                    {% if answer.is_correct %}{{ answer.text }}{% endif %}
+                                {% endfor %}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if response.question.explanation %}
+                    <div class="item-explanation">
+                        <strong>Explanation:</strong> {{ response.question.explanation }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Action Buttons Bottom -->
+        <div class="results-footer">
+            <a href="{% url 'dashboard' %}" class="btn-secondary">
+                🏠 Back to Dashboard
+            </a>
+            <a href="{% url 'category_quizzes' attempt.quiz.category.slug %}" class="btn-primary">
+                🔄 Retry Quiz
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterQuestions(event, filter) {
+    const items = document.querySelectorAll('.review-item');
+    const buttons = document.querySelectorAll('.filter-btn');
+    
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    items.forEach(item => {
+        if (filter === 'all') {
+            item.style.display = 'block';
+        } else {
+            item.style.display = item.dataset.status === filter ? 'block' : 'none';
+        }
+    });
+}
+
+function shareResults() {
+    const text = `I scored {{ attempt.percentage_score }}% on {{ attempt.quiz.title }}!`;
+    if (navigator.share) {
+        navigator.share({
+            title: 'Quiz Results',
+            text: text,
+            url: window.location.href
+        });
+    } else {
+        alert('Share functionality not supported');
+    }
+}
+</script>
+{% endblock %}
