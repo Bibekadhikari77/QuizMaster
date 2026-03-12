@@ -767,6 +767,7 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.5rem;
+    align-items: stretch;
 }
 
 .category-card {
@@ -776,6 +777,9 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     transition: all 0.3s;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .category-card:hover {
@@ -786,6 +790,7 @@ body {
 .category-image {
     height: 200px;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .category-image img {
@@ -802,6 +807,9 @@ body {
 
 .category-content {
     padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .category-header {
@@ -884,12 +892,14 @@ body {
     color: var(--gray-600);
     margin-bottom: 1rem;
     line-height: 1.5;
+    flex: 1;
 }
 
 .category-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: auto;
 }
 
 .question-count {
