@@ -21,6 +21,7 @@
             </a>
             <a href="{% url 'leaderboard' %}" class="nav-item">
                 <span class="nav-icon">📈</span>
+
                 <span>Leaderboard</span>
             </a>
             <a href="{% url 'saved_quizzes' %}" class="nav-item">
@@ -54,7 +55,7 @@
             </div>
             <div class="header-actions">
                 <button class="icon-btn">🔔</button>
-                <button class="icon-btn">❓</button>
+                
                 <div class="user-profile">
                     {% if user.profile.avatar %}
                         <img src="{{ user.profile.avatar.url }}" alt="Profile" class="user-avatar user-avatar-img">
