@@ -11,3 +11,21 @@ venv/
 *.pot
 *.py[cod]
 *$py.class
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment
+*.env.local
+*.env.production
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+
+# Distribution
+dist/
+build/
+*.egg-info/
